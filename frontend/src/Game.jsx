@@ -87,6 +87,42 @@ export default function Game() {
     const newCard = allCards[Math.floor(Math.random() * allCards.length)];
     setBotHand(prev => [...prev, newCard]);
   }
+  const botPlay = () => {
+    if (gameOver) return;
+
+    // si no es el turno del bot, no juega
+    if (isPlayerTurn) return;
+
+    const hasPolitician = botBoard.some(card => card.type === "politician");
+    const contractCard = botHand.find(card => card.type === "contrato");
+
+    // --- CASO 1: Bot está bloqueado por un político ---
+    if (hasPolitician) {
+
+      // NO tiene contrato → pasa turno
+      if (!contractCard) {
+        console.log("Bot no puede jugar por político → pasa turno");
+        setIsPlayerTurn(true);
+        setHasDrawnThisTurn(false);
+        return;
+      }
+
+      // SÍ tiene contrato → usa el contrato automáticamente
+      console.log("Bot usa contrato automáticamente");
+      playCard(contractCard, false);
+      return;
+    }
+
+    // --- CASO 2: No tiene político → juega normal ---
+    if (botHand.length === 0) {
+      setIsPlayerTurn(true);
+      setHasDrawnThisTurn(false);
+      return;
+    }
+
+    const botCard = botHand[Math.floor(Math.random() * botHand.length)];
+    playCard(botCard, false);
+  };
 
   // Al comenzar cada turno, robar exactamente UNA carta (player o bot).
   // Usamos hasDrawnThisTurn para que no se ejecute repetidamente.
@@ -106,19 +142,7 @@ export default function Game() {
 
         // programar jugada del bot después de un pequeño retardo (para dejar que el estado de la carta se actualice)
         setTimeout(() => {
-          if (gameOver) return;
-          // el bot jugará únicamente si sigue siendo su turno
-          if (!isPlayerTurn) {
-            if (botHand.length === 0) {
-              // si aun así no tiene cartas (posible si botHand estaba vacío antes del draw por timing), pasar el turno
-              setIsPlayerTurn(true);
-              setHasDrawnThisTurn(false);
-              return;
-            }
-            // elegir carta (simple IA aleatoria)
-            const botCard = botHand[Math.floor(Math.random() * botHand.length)];
-            playCard(botCard, false);
-          }
+          botPlay();
         }, 700);
       }
     }
