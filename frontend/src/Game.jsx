@@ -2,6 +2,8 @@
 import React, { useState, useEffect, useCallback } from "react";
 import Card from "./Cards/Card";
 import { cards as allCards } from "./Cards/Card";
+// import subwayVideo from "./Videos/subway_1.mp4";
+
 
 /* -------------------------
    ProgressBar (sin cambios)
@@ -534,7 +536,28 @@ export default function Game() {
   }
 
   return (
-    <>
+      <>
+        {/*
+        <video
+          src={subwayVideo}
+          autoPlay
+          loop
+          muted
+          playsInline
+          style={{
+            position: "fixed",
+            bottom: "30px",
+            right: "20px",
+            width: "180px",
+            height: "400px",
+            objectFit: "cover",   // ← IMPORTANTE
+            borderRadius: "12px",
+            boxShadow: "0 0 10px rgba(0, 0, 0, 0.5)",
+            zIndex: 20,
+          }}
+        />
+        */}
+
       <div
         style={{
           position: "relative",
