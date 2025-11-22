@@ -501,15 +501,6 @@ export default function Game() {
   // ------------------------------------------------
   // Estilos y render
   // ------------------------------------------------
-  const cardStyle = {
-    height: 90,
-    width: 70,
-    objectFit: "contain",
-    borderRadius: 8,
-    boxShadow: "0 2px 6px rgba(0,0,0,0.15)",
-    background: "white",
-  };
-
   const pulseCss = `
     @keyframes burnPulse {
       0% { box-shadow: 0 0 0 0 rgba(229,57,53,0.9); }
@@ -549,19 +540,93 @@ export default function Game() {
     if (selectingBurnTarget || selectingLumberTarget || selectingContractTarget) return;
     finalizeAfterAction(true, 0);
   }
+  
+  const cardStyle = {
+    width: "80px",
+    height: "110px",
+    borderRadius: "8px",
+    boxShadow: "0 0 6px rgba(0,0,0,0.25)"
+  };
+
+  function handlePlayerCardClick(card) {
+  playCard(card, true);
+  }
 
   return (
-    <div style={{ position: "relative", minHeight: "100vh", padding: 20 }}>
+    <div
+      style={{
+        position: "relative",
+        minHeight: "100vh",
+        padding: 20,
+        marginLeft: "260px" // mueve el juego para dejar espacio al panel izquierdo
+      }}
+    >
+      {/* Panel de Reglas */}
+      <div
+        style={{
+          position: "absolute",
+          left: -200,
+          top: 100,
+          width: "300px",
+          height: "70%",
+          background: "#f2f2f2",
+          padding: "16px",
+          borderRight: "3px solid #ccc",
+          overflowY: "auto",
+          boxShadow: "2px 0 6px rgba(0,0,0,0.1)"
+        }}
+      >
+        <h3 style={{ color: "#917b00ff" }}>Reglas</h3>
+
+
+        <p><strong>Objetivo:</strong> Llegar a 20 puntos plantando árboles.</p>
+
+        <h4>Cartas</h4>
+        <ul>
+          <li><strong>Árbol:</strong> Suma su valor a tu puntaje.</li>
+          <li><strong>Fogata:</strong> Quita 1 carta del tablero enemigo.</li>
+          <li><strong>Incendio:</strong> Quita 2 cartas del tablero enemigo.</li>
+          <li><strong>Leñador:</strong> Elimina un árbol del enemigo.</li>
+          <li><strong>Político:</strong> Bloquea al rival para plantar árboles.</li>
+          <li><strong>Contrato:</strong> Elimina el Político que te bloquea.</li>
+        </ul>
+
+        <h4>Turnos</h4>
+        <ul>
+          <li>Se roba 1 carta por turno (máx 5 en mano).</li>
+          <li>Puedes jugar 1 carta por turno.</li>
+          <li>Si el bot no puede jugar, pasa turno.</li>
+        </ul>
+      </div>
+
+      {/* Animación CSS pulse */}
       <style>{pulseCss}</style>
+
       <h2>Forest Clash</h2>
 
-      {/* indicador de turno y boton terminar turno */}
+      {/* indicador de turno y botón terminar turno */}
       <div style={{ position: "absolute", top: 10, right: 20 }}>
-        <div style={{ marginBottom: 8, background: isPlayerTurn ? "#4CAF50" : "#F44336", color: "white", padding: "6px 10px", borderRadius: 16 }}>
+        <div
+          style={{
+            marginBottom: 8,
+            background: isPlayerTurn ? "#4CAF50" : "#F44336",
+            color: "white",
+            padding: "6px 10px",
+            borderRadius: 16
+          }}
+        >
           {isPlayerTurn ? "Tu Turno" : "Turno del Bot"}
         </div>
+
         {isPlayerTurn && (
-          <button onClick={handleEndTurnClick} disabled={selectingBurnTarget || selectingLumberTarget || selectingContractTarget}>
+          <button
+            onClick={handleEndTurnClick}
+            disabled={
+              selectingBurnTarget ||
+              selectingLumberTarget ||
+              selectingContractTarget
+            }
+          >
             Terminar Turno
           </button>
         )}
@@ -569,7 +634,9 @@ export default function Game() {
 
       {/* progreso del bot */}
       <div style={{ textAlign: "center", marginTop: 10 }}>
-        <h3>Árboles del Bot: {botTrees} / {GOAL}</h3>
+        <h3>
+          Árboles del Bot: {botTrees} / {GOAL}
+        </h3>
         <ProgressBar value={botTrees} goal={GOAL} />
       </div>
 
@@ -578,14 +645,15 @@ export default function Game() {
         <h3>Tablero del Bot</h3>
         <div style={{ display: "flex", justifyContent: "center", gap: 12 }}>
           {botBoard.map((c, i) => {
-            // determinar clases/bordes visuales (contract -> azul, fire -> naranja, lumber -> verde)
             let cls = "";
             if (selectingBurnTarget) cls = "fire-target";
             else if (selectingLumberTarget) cls = "lumber-target";
-            else if (selectingContractTarget && isPolitician(c)) cls = "contract-target"; // resaltar politicians para contract
+            else if (selectingContractTarget && isPolitician(c))
+              cls = "contract-target";
 
-            // borde rojo si es politician del rival
-            const extraStyle = isPolitician(c) ? { border: "3px solid darkred", borderRadius: 8 } : {};
+            const extraStyle = isPolitician(c)
+              ? { border: "3px solid darkred", borderRadius: 8 }
+              : {};
 
             return (
               <div
@@ -594,9 +662,18 @@ export default function Game() {
                 onClick={() => {
                   if (selectingBurnTarget) handleBurnTarget(i);
                   if (selectingLumberTarget) handleLumberTarget(i);
-                  if (selectingContractTarget) handleContractTarget(i, true);
+                  if (selectingContractTarget)
+                    handleContractTarget(i, true);
                 }}
-                style={{ cursor: (selectingBurnTarget || selectingLumberTarget || selectingContractTarget) ? "pointer" : "default", ...extraStyle }}
+                style={{
+                  cursor:
+                    selectingBurnTarget ||
+                    selectingLumberTarget ||
+                    selectingContractTarget
+                      ? "pointer"
+                      : "default",
+                  ...extraStyle
+                }}
               >
                 <img src={c.img} alt={c.name} style={cardStyle} />
               </div>
@@ -606,12 +683,14 @@ export default function Game() {
       </div>
 
       {/* progreso del jugador */}
-      <div style={{ textAlign: "center", marginTop: 40 }}>
-        <h3>Tus Árboles: {playerTrees} / {GOAL}</h3>
+      <div style={{ textAlign: "center", marginTop: 30 }}>
+        <h3>
+          Tus Árboles: {playerTrees} / {GOAL}
+        </h3>
         <ProgressBar value={playerTrees} goal={GOAL} />
       </div>
 
-      {/* tablero del jugador */}
+      {/* Tablero del jugador */}
       <div style={{ marginTop: 18, textAlign: "center" }}>
         <h3>Tu Tablero</h3>
         <div style={{ display: "flex", justifyContent: "center", gap: 12 }}>
@@ -619,20 +698,20 @@ export default function Game() {
             let cls = "";
             if (selectingBurnTarget) cls = "fire-target";
             else if (selectingLumberTarget) cls = "lumber-target";
-            else if (selectingContractTarget && isPolitician(c)) cls = "contract-target";
 
-            const extraStyle = isPolitician(c) ? { border: "3px solid darkred", borderRadius: 8 } : {};
+            const extraStyle = isPolitician(c)
+              ? { border: "3px solid darkred", borderRadius: 8 }
+              : {};
 
             return (
               <div
                 key={c.instanceId}
-                className={cls + (isPolitician(c) ? " politician-red" : "")}
+                className={cls}
                 onClick={() => {
-                  if (selectingBurnTarget) handleBurnTarget(i);
-                  if (selectingLumberTarget) handleLumberTarget(i);
-                  if (selectingContractTarget) handleContractTarget(i, false);
+                  if (selectingBurnTarget) handleBurnTarget(i, true);
+                  if (selectingLumberTarget) handleLumberTarget(i, true);
                 }}
-                style={{ cursor: (selectingBurnTarget || selectingLumberTarget || selectingContractTarget) ? "pointer" : "default", ...extraStyle }}
+                style={{ ...extraStyle }}
               >
                 <img src={c.img} alt={c.name} style={cardStyle} />
               </div>
@@ -641,23 +720,32 @@ export default function Game() {
         </div>
       </div>
 
-      {/* mano del jugador (abajo, max 5 cartas) */}
-      {!gameOver && (
-        <div style={{
-          position: "absolute",
-          bottom: 20,
-          left: "50%",
-          transform: "translateX(-50%)",
-          display: "flex",
-          gap: 10,
-          alignItems: "flex-end",
-          opacity: (selectingBurnTarget || selectingLumberTarget || selectingContractTarget) ? 0.75 : 1,
-        }}>
-          {playerHand.map(c => (
-            <Card key={c.instanceId} card={c} onPlay={() => playCard(c, true)} />
+      {/* Mano del jugador */}
+      <div style={{ textAlign: "center", marginTop: 40 }}>
+        <h3>Tu Mano</h3>
+        <div style={{ display: "flex", justifyContent: "center", gap: 12 }}>
+          {playerHand.map((c) => (
+            <div
+              key={c.instanceId}
+              className={
+                selectingBurnTarget ||
+                selectingLumberTarget ||
+                selectingContractTarget
+                  ? "disabled-card"
+                  : "hand-card"
+              }
+              onClick={() =>
+                !selectingBurnTarget &&
+                !selectingLumberTarget &&
+                !selectingContractTarget &&
+                handlePlayerCardClick(c)
+              }
+            >
+              <img src={c.img} alt={c.name} style={cardStyle} />
+            </div>
           ))}
         </div>
-      )}
+      </div>
     </div>
   );
 }

@@ -16,7 +16,7 @@ export const cards = [
   { id: "tree4", type: "tree", value: 4, name: "Árbol x4", img: Arbol4 },
   { id: "fogata", type: "fire", name: "Fogata", img: Fogata },
   { id: "lenador", type: "lumberjack", name: "Leñador", img: Lenador },
-  { id: "politico", type: "politician", name: "Político", img: Politico },
+  { id: "politician", type: "politician", name: "Político", img: Politico },
   { id: "contrato", type: "contract", name: "Contrato", img: Contrato },
   { id: "incendio", type: "wildfire", name: "Incendio Forestal", img: Incendio }
 ];
