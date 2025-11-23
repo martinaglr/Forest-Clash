@@ -20,16 +20,20 @@ const userSchema = new mongoose.Schema({
     },
     password: {
         type: String,
-        required: true,
         minlength: 6
     },
     googleId: {
         type: String,
-        default: null // Para SSO con Google
+        default: null
+        // ❌ SIN unique, SIN sparse, SIN nada
     },
     displayName: {
         type: String,
-        default: null // Nombre desde Google
+        default: null
+    },
+    avatar: {
+        type: String,
+        default: null
     },
     stats: {
         gamesPlayed: { type: Number, default: 0 },
@@ -45,8 +49,7 @@ const userSchema = new mongoose.Schema({
 
 // Método para encriptar contraseña antes de guardar
 userSchema.pre('save', async function(next) {
-    // Solo hashear si la contraseña fue modificada
-    if (!this.isModified('password')) return next();
+    if (!this.isModified('password') || !this.password) return next();
 
     try {
         const salt = await bcrypt.genSalt(10);
@@ -59,6 +62,7 @@ userSchema.pre('save', async function(next) {
 
 // Método para comparar contraseñas
 userSchema.methods.comparePassword = async function(candidatePassword) {
+    if (!this.password) return false;
     return await bcrypt.compare(candidatePassword, this.password);
 };
 
@@ -83,7 +87,7 @@ const gameSchema = new mongoose.Schema({
         required: true
     },
     duration: {
-        type: Number, // en segundos
+        type: Number,
         default: 0
     },
     moves: [{

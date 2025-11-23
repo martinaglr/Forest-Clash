@@ -1,0 +1,60 @@
+/* Login.css */
+
+.login-card {
+    padding: 30px;
+    max-width: 450px;
+    margin: 0 auto;
+}
+
+.login-card h2 {
+    color: #333;
+    font-weight: 700;
+}
+
+.login-card .form-control {
+    padding: 12px;
+    border-radius: 8px;
+    border: 2px solid #dee2e6;
+    transition: all 0.3s ease;
+}
+
+.login-card .form-control:focus {
+    border-color: #28a745;
+    box-shadow: 0 0 0 0.2rem rgba(40, 167, 69, 0.25);
+}
+
+.login-card .btn {
+    padding: 12px;
+    border-radius: 8px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.login-card .btn:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.login-card .btn:disabled {
+    cursor: not-allowed;
+    opacity: 0.6;
+}
+
+.login-card .btn-outline-dark {
+    border: 2px solid #dee2e6;
+}
+
+.login-card .btn-outline-dark:hover:not(:disabled) {
+    background-color: #f8f9fa;
+    border-color: #4285F4;
+}
+
+@media (max-width: 576px) {
+    .login-card {
+        padding: 20px;
+    }
+
+    .login-card h2 {
+        font-size: 24px;
+    }
+}
