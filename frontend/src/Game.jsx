@@ -455,29 +455,35 @@ export default function Game() {
   // ------------------------------------------------
   function handleContractTarget(index, targetIsBot = true) {
     if (!selectingContractTarget || !pendingContractCard) return;
+    
     const board = targetIsBot ? botBoard : playerBoard;
+    const setBoard = targetIsBot ? setBotBoard : setPlayerBoard;
+    const setHasPolitician = targetIsBot ? setBotHasPolitician : setPlayerHasPolitician;
+    const setTrees = targetIsBot ? setBotTrees : setPlayerTrees;
+    
     if (index < 0 || index >= board.length) return;
+    
     const candidate = board[index];
-    if (!(candidate.type === "politician" || candidate.isPolitician)) return;
-
-    if (targetIsBot) {
-      const val = candidate.value ?? 0;
-      setBotBoard((prev) => prev.filter((_, i) => i !== index));
-      setBotTrees((t) => Math.max(0, t - val));
-      setBotHasPolitician(false);
-      addHistory(true, `Contract -> removed Bot Politician`);
-    } else {
-      const val = candidate.value ?? 0;
-      setPlayerBoard((prev) => prev.filter((_, i) => i !== index));
-      setPlayerTrees((t) => Math.max(0, t - val));
-      setPlayerHasPolitician(false);
-      addHistory(true, `Contract -> removed Your Politician`);
+    if (!(candidate.type === "politician" || candidate.isPolitician)) {
+      alert("Debes seleccionar un Político como objetivo del Contrato");
+      return;
     }
 
-    // consumir contract de la mano del jugador
+    // Eliminar el político
+    const val = candidate.value ?? 0;
+    setBoard((prev) => prev.filter((_, i) => i !== index));
+    setTrees((t) => Math.max(0, t - val));
+    setHasPolitician(false);
+    
+    // Consumir contract de la mano del jugador
     setPlayerHand((prev) => prev.filter((c) => c.instanceId !== pendingContractCard.instanceId));
+    
+    addHistory(true, `Contract -> removed ${targetIsBot ? "Bot" : "Your"} Politician`);
     setPendingContractCard(null);
     setSelectingContractTarget(false);
+    
+    // Finalizar acción
+    finalizeAfterAction(true, 0);
   }
 
   function addTreeToBoard(card, byPlayer, setSelfBoard /*, setSelfTrees no se usa */) {
@@ -622,30 +628,42 @@ export default function Game() {
 
         <h2>Forest Clash</h2>
 
-        {/* indicador de turno y botón terminar turno */}
-        <div style={{ position: "absolute", top: 10, right: 20 }}>
-          <div
-            style={{
-              marginBottom: 8,
-              background: isPlayerTurn ? "#4CAF50" : "#F44336",
-              color: "white",
-              padding: "6px 10px",
-              borderRadius: 16,
-            }}
-          >
-            {isPlayerTurn ? "Tu Turno" : "Turno del Bot"}
-          </div>
-
-          {isPlayerTurn && (
-            <button
-              onClick={handleEndTurnClick}
-              disabled={
-                selectingBurnTarget || selectingLumberTarget || selectingContractTarget
-              }
+        {/* Panel de turno */}
+          <div style={{ position: "absolute", top: 10, right: 20 }}>
+            <div
+              style={{
+                marginBottom: 8,
+                background: isPlayerTurn ? "#388e3c" : "#d32f2f",
+                color: "white",
+                padding: "6px 10px",
+                borderRadius: 16,
+                fontWeight: "bold",
+                textAlign: "center",
+                boxShadow: "0 2px 4px rgba(0,0,0,0.2)",
+              }}
             >
-              Terminar Turno
-            </button>
-          )}
+              {isPlayerTurn ? "Tu Turno" : "Turno del Bot"}
+            </div>
+            {isPlayerTurn && (
+              <button
+                onClick={handleEndTurnClick}
+                disabled={selectingBurnTarget || selectingLumberTarget || selectingContractTarget}
+                style={{
+                  padding: "8px 16px",
+                  background: "#6a1b9a",
+                  color: "#fff",
+                  border: "none",
+                  borderRadius: "8px",
+                  boxShadow: "0 3px 6px rgba(0,0,0,0.2)",
+                  cursor: "pointer",
+                  transition: "background 0.2s",
+                }}
+                onMouseEnter={(e) => (e.currentTarget.style.background = "#4a148c")}
+                onMouseLeave={(e) => (e.currentTarget.style.background = "#6a1b9a")}
+              >
+                Terminar Turno
+              </button>
+            )}
         </div>
 
         {/* progreso del bot */}
@@ -694,42 +712,42 @@ export default function Game() {
           </div>
         </div>
 
-        {/* progreso del jugador */}
-        <div style={{ textAlign: "center", marginTop: 30 }}>
-          <h3>
-            Tus Árboles: {playerTrees} / {GOAL}
-          </h3>
-          <ProgressBar value={playerTrees} goal={GOAL} />
-        </div>
-
         {/* Tablero del jugador */}
-        <div style={{ marginTop: 18, textAlign: "center" }}>
-          <h3>Tu Tablero</h3>
-          <div style={{ display: "flex", justifyContent: "center", gap: 12 }}>
-            {playerBoard.map((c, i) => {
-              let cls = "";
-              if (selectingBurnTarget) cls = "fire-target";
-              else if (selectingLumberTarget) cls = "lumber-target";
+          <div style={{ marginTop: 18, textAlign: "center" }}>
+            <h3>Tu Tablero</h3>
+            <div style={{ display: "flex", justifyContent: "center", gap: 12 }}>
+              {playerBoard.map((c, i) => {
+                let cls = "";
+                if (selectingBurnTarget) cls = "fire-target";
+                else if (selectingLumberTarget) cls = "lumber-target";
+                else if (selectingContractTarget && isPolitician(c)) cls = "contract-target"; // ← AÑADIDO
 
-              const extraStyle = isPolitician(c)
-                ? { border: "3px solid darkred", borderRadius: 8 }
-                : {};
+                const extraStyle = isPolitician(c)
+                  ? { border: "3px solid darkred", borderRadius: 8 }
+                  : {};
 
-              return (
-                <div
-                  key={c.instanceId}
-                  className={cls}
-                  onClick={() => {
-                    if (selectingBurnTarget) handleBurnTarget(i, true);
-                    if (selectingLumberTarget) handleLumberTarget(i, true);
-                  }}
-                  style={{ ...extraStyle }}
-                >
-                  <img src={c.img} alt={c.name} style={cardStyle} />
-                </div>
-              );
-            })}
-          </div>
+                return (
+                  <div
+                    key={c.instanceId}
+                    className={cls + (isPolitician(c) ? " politician-red" : "")}
+                    onClick={() => {
+                      if (selectingBurnTarget) handleBurnTarget(i, true);
+                      if (selectingLumberTarget) handleLumberTarget(i, true);
+                      if (selectingContractTarget) handleContractTarget(i, false); // ← AÑADIDO (false = es tu tablero)
+                    }}
+                    style={{
+                      cursor:
+                        selectingBurnTarget || selectingLumberTarget || selectingContractTarget
+                          ? "pointer"
+                          : "default",
+                      ...extraStyle,
+                    }}
+                  >
+                    <img src={c.img} alt={c.name} style={cardStyle} />
+                  </div>
+                );
+              })}
+            </div>
         </div>
 
         {/* Mano del jugador */}
