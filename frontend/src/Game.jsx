@@ -711,6 +711,13 @@ export default function Game() {
             })}
           </div>
         </div>
+        {/* progreso del jugador */}
+          <div style={{ textAlign: "center", marginTop: 30 }}>
+            <h3>
+              Tus Árboles: {playerTrees} / {GOAL}
+            </h3>
+            <ProgressBar value={playerTrees} goal={GOAL} />
+          </div>
 
         {/* Tablero del jugador */}
           <div style={{ marginTop: 18, textAlign: "center" }}>
