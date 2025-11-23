@@ -2,7 +2,9 @@
 import React, { useState, useEffect, useCallback } from "react";
 import Card from "./Cards/Card";
 import { cards as allCards } from "./Cards/Card";
-// import subwayVideo from "./Videos/subway_1.mp4";
+import subwayVideo from "./Videos/subway_1.mp4";
+import backgroundMusic from "./Videos/miAudio.mp3";
+
 
 
 /* -------------------------
@@ -79,6 +81,12 @@ export default function Game() {
   // Historial de jugadas
   const [history, setHistory] = useState([]);
 
+  const [volume, setVolume] = useState(0.5); // volumen inicial (50%)
+  const [isMuted, setIsMuted] = useState(false);
+  const audioRef = React.useRef(null);
+
+
+
   // Añade entrada al historial (mantiene solo últimas 20)
   function addHistory(byPlayer, label) {
     const entry = {
@@ -106,6 +114,13 @@ export default function Game() {
     setHasDrawnThisTurn(false);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+  useEffect(() => {
+    if (audioRef.current) {
+      audioRef.current.volume = volume;
+      audioRef.current.muted = isMuted;
+    }
+  }, [volume, isMuted]);
+
 
   // ------------------------------------------------
   // Draw: solo si mano tiene menos de 5 cartas
@@ -543,7 +558,72 @@ export default function Game() {
 
   return (
       <>
-        {/*
+      <audio
+        ref={audioRef}
+        src={backgroundMusic}
+        autoPlay
+        loop
+        muted={isMuted}
+        volume={volume}
+        style={{ display: "none" }}
+      />
+      {/* Panel de control de volumen */}
+<div
+  style={{
+    position: "absolute",
+    top: "20px",
+    left: "20px",
+    width: "200px",
+    background: "#ffffffcc",
+    padding: "6px 10px",
+    borderRadius: "10px",
+    boxShadow: "0 0 8px rgba(0,0,0,0.15)",
+    backdropFilter: "blur(3px)"
+  }}
+>
+  <h4 style={{ margin: "0 0 8px 0", color: "#2e4600", fontWeight: "bold" }}>
+    Música
+  </h4>
+
+  {/* Slider de volumen */}
+  <input
+    type="range"
+    min="0"
+    max="1"
+    step="0.01"
+    value={isMuted ? 0 : volume}
+      onChange={(e) => setVolume(parseFloat(e.target.value))}
+      disabled={isMuted}
+      style={{
+        flex: 1,
+        height: "4px",              // ← SLIDER MÁS DELGADO
+        marginTop: "2px"
+      }}
+  />
+
+  {/* Botón silenciar */}
+  <button
+    onClick={() => setIsMuted(!isMuted)}
+    style={{
+      centered: "true",
+      marginTop: "8px",
+      width: "100%",
+      padding: "2px 6px",
+      background: isMuted ? "#8b0000" : "#3c6e47",
+      color: "white",
+      border: "none",
+      borderRadius: "6px",
+      cursor: "pointer",
+      fontWeight: "bold"
+    }}
+  >
+    {isMuted ? "Desactivar Silencio" : "Silenciar"}
+  </button>
+</div>
+
+
+
+      {
         <video
           src={subwayVideo}
           autoPlay
@@ -562,7 +642,7 @@ export default function Game() {
             zIndex: 20,
           }}
         />
-        */}
+          }
 
       <div
         style={{
@@ -577,7 +657,7 @@ export default function Game() {
           style={{
             position: "absolute",
             left: -200,
-            top: 100,
+            top: 120,
             width: "300px",
             height: "70%",
             background: "#f2f2f2",
