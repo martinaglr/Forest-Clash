@@ -4,7 +4,8 @@ import { Container, Row, Col, Card, Button, Badge, Modal, ProgressBar, Navbar, A
 import CardComponent from "./Cards/Card";
 import { cards as allCards } from "./Cards/Card";
 import backgroundMusic from "./Videos/miAudio.mp3";
-import Login from "./Login"; // ⬅️ NUEVO: Importar componente de login
+import Login from "./Login"; // Importar componente de login
+import GeminiChat from './components/GeminiChat';
 
 function makeInstance(card) {
     return {
@@ -519,34 +520,56 @@ export default function Game({ user, setUser }) { // ⬅️ NUEVO: Recibir prop 
             <audio ref={audioRef} src={backgroundMusic} autoPlay loop muted={isMuted} style={{ display: "none" }} />
 
             {/* NAVBAR CON BOTÓN DE LOGIN ⬅️ MODIFICADO */}
+
             <Navbar bg="success" variant="dark" className="mb-3">
                 <Container fluid>
-                    <Navbar.Brand href="#" className="fw-bold fs-3">🌲 Forest Clash</Navbar.Brand>
-                    <div className="d-flex gap-2 align-items-center">
-                        <Button variant="outline-light" size="sm" onClick={() => setShowRules(true)}>📖 Reglas</Button>
-                        <Button variant="outline-light" size="sm" onClick={() => setShowAITips(true)}>💡 Consejos IA</Button>
-                        <Button variant="outline-light" size="sm" onClick={() => setShowWeather(true)}>🌦️ Clima</Button>
+                    <Navbar.Brand href="#" className="fw-bold fs-5 fs-md-3">🌲 Forest Clash</Navbar.Brand>
+                    <div className="d-flex gap-1 gap-md-2 align-items-center flex-wrap">
+                        <Button variant="outline-light" size="sm" onClick={() => setShowRules(true)}>
+                            <span className="d-none d-md-inline">📖 Reglas</span>
+                            <span className="d-inline d-md-none">📖</span>
+                        </Button>
+                        <Button variant="outline-light" size="sm" onClick={() => setShowAITips(true)}>
+                            <span className="d-none d-md-inline">💡 Consejos IA</span>
+                            <span className="d-inline d-md-none">💡</span>
+                        </Button>
+                        <Button variant="outline-light" size="sm" onClick={() => setShowWeather(true)}>
+                            <span className="d-none d-md-inline">🌦️ Clima</span>
+                            <span className="d-inline d-md-none">🌦️</span>
+                        </Button>
                         <Button variant="outline-light" size="sm" onClick={() => setIsMuted(!isMuted)}>
                             {isMuted ? "🔇" : "🔊"}
                         </Button>
 
-                        {/* ⬅️ NUEVO: Botón de Login/Usuario */}
+                        {/* BOTÓN DE LOGIN/USUARIO - RESPONSIVE */}
                         {user ? (
                             <Dropdown align="end">
-                                <Dropdown.Toggle variant="light" size="sm" className="d-flex align-items-center gap-2">
+                                <Dropdown.Toggle
+                                    variant="light"
+                                    size="sm"
+                                    className="d-flex align-items-center gap-1 gap-md-2"
+                                    style={{ maxWidth: "150px" }}
+                                >
                                     {user.avatar && (
                                         <img
                                             src={user.avatar}
                                             alt={user.displayName || user.username}
                                             style={{
-                                                width: "30px",
-                                                height: "30px",
+                                                width: "25px",
+                                                height: "25px",
                                                 borderRadius: "50%",
-                                                border: "2px solid white"
+                                                border: "2px solid white",
+                                                flexShrink: 0
                                             }}
                                         />
                                     )}
-                                    <span>{user.displayName || user.username}</span>
+                                    <span
+                                        className="text-truncate d-none d-sm-inline"
+                                        style={{ maxWidth: "100px" }}
+                                    >
+                            {user.displayName || user.username}
+                        </span>
+                                    <span className="d-inline d-sm-none">👤</span>
                                 </Dropdown.Toggle>
 
                                 <Dropdown.Menu>
@@ -573,8 +596,14 @@ export default function Game({ user, setUser }) { // ⬅️ NUEVO: Recibir prop 
                                 </Dropdown.Menu>
                             </Dropdown>
                         ) : (
-                            <Button variant="light" size="sm" onClick={() => setShowLogin(true)}>
-                                🔐 Iniciar Sesión
+                            <Button
+                                variant="light"
+                                size="sm"
+                                onClick={() => setShowLogin(true)}
+                                className="text-nowrap"
+                            >
+                                <span className="d-none d-sm-inline">🔒 Iniciar Sesión</span>
+                                <span className="d-inline d-sm-none">🔒</span>
                             </Button>
                         )}
                     </div>
@@ -974,6 +1003,15 @@ export default function Game({ user, setUser }) { // ⬅️ NUEVO: Recibir prop 
                     )}
                 </Modal.Footer>
             </Modal>
+            {/* Chat de IA - Esquina inferior izquierda */}
+            <GeminiChat
+                playerTrees={playerTrees}
+                botTrees={botTrees}
+                playerHand={playerHand}
+                playerBoard={playerBoard}
+                botBoard={botBoard}
+                isPlayerTurn={isPlayerTurn}
+            />
         </>
     );
 }
