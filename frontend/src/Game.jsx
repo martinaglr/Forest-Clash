@@ -6,6 +6,7 @@ import { cards as allCards } from "./Cards/Card";
 import backgroundMusic from "./Videos/miAudio.mp3";
 import Login from "./Login"; // Importar componente de login
 import GeminiChat from './components/GeminiChat';
+import WeatherWidget from './components/WeatherWidget';
 
 function makeInstance(card) {
     return {
@@ -529,14 +530,11 @@ export default function Game({ user, setUser }) { // ⬅️ NUEVO: Recibir prop 
                             <span className="d-none d-md-inline">📖 Reglas</span>
                             <span className="d-inline d-md-none">📖</span>
                         </Button>
-                        <Button variant="outline-light" size="sm" onClick={() => setShowAITips(true)}>
-                            <span className="d-none d-md-inline">💡 Consejos IA</span>
-                            <span className="d-inline d-md-none">💡</span>
-                        </Button>
+
                         <Button variant="outline-light" size="sm" onClick={() => setShowWeather(true)}>
-                            <span className="d-none d-md-inline">🌦️ Clima</span>
-                            <span className="d-inline d-md-none">🌦️</span>
+                            🌦️ Clima
                         </Button>
+
                         <Button variant="outline-light" size="sm" onClick={() => setIsMuted(!isMuted)}>
                             {isMuted ? "🔇" : "🔊"}
                         </Button>
@@ -860,43 +858,7 @@ export default function Game({ user, setUser }) { // ⬅️ NUEVO: Recibir prop 
                 </Modal.Footer>
             </Modal>
 
-            {/* MODAL: Consejos de IA */}
-            <Modal show={showAITips} onHide={() => setShowAITips(false)}>
-                <Modal.Header closeButton className="bg-primary text-white">
-                    <Modal.Title>💡 Consejos del Guardabosques (IA)</Modal.Title>
-                </Modal.Header>
-                <Modal.Body>
-                    <p className="text-muted">🔧 Aquí se integrará la API de IA (Gemini)</p>
-                    <p><strong>Consejos sobre prevención de incendios forestales:</strong></p>
-                    <ul>
-                        <li>No dejes fogatas sin supervisión</li>
-                        <li>Respeta las zonas de prohibición</li>
-                        <li>Reporta cualquier humo sospechoso</li>
-                    </ul>
-                    <Button variant="primary" className="w-100">Obtener más consejos (IA)</Button>
-                </Modal.Body>
-            </Modal>
 
-            {/* MODAL: Clima */}
-            <Modal show={showWeather} onHide={() => setShowWeather(false)}>
-                <Modal.Header closeButton className="bg-info text-white">
-                    <Modal.Title>🌦️ Condiciones del Clima (API Externa)</Modal.Title>
-                </Modal.Header>
-                <Modal.Body>
-                    <p className="text-muted">🔧 Aquí se integrará la API del clima</p>
-                    <input type="text" className="form-control mb-3" placeholder="Ingresa tu ciudad..." />
-                    <Button variant="info" className="w-100">Consultar Clima</Button>
-
-                    <hr />
-
-                    <div className="mt-3">
-                        <h6>📍 Santiago, Chile</h6>
-                        <p><strong>Temperatura:</strong> 25°C</p>
-                        <p><strong>Humedad:</strong> 45%</p>
-                        <p><strong>Riesgo de incendio:</strong> <Badge bg="warning">Medio</Badge></p>
-                    </div>
-                </Modal.Body>
-            </Modal>
 
             {/* ⬅️ NUEVO: MODAL DE HISTORIAL DE PARTIDAS */}
             <Modal show={showHistory} onHide={() => setShowHistory(false)} size="lg">
@@ -1012,6 +974,12 @@ export default function Game({ user, setUser }) { // ⬅️ NUEVO: Recibir prop 
                 botBoard={botBoard}
                 isPlayerTurn={isPlayerTurn}
             />
+            {/* Modal de Clima */}
+            <WeatherWidget
+                show={showWeather}
+                onHide={() => setShowWeather(false)}
+            />
+
         </>
     );
 }
