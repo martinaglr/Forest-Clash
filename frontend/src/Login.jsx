@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Form, Button, Alert } from 'react-bootstrap';
+import config from './config'; // ⬅️ NUEVO: Importar configuración
 import './Login.css';
 
 const Login = ({ onLoginSuccess }) => {
@@ -31,7 +32,8 @@ const Login = ({ onLoginSuccess }) => {
             : { email: formData.email, password: formData.password };
 
         try {
-            const response = await fetch(`http://localhost:5000/api/auth/${endpoint}`, {
+            // ⬅️ CAMBIADO: Usar config.apiUrl
+            const response = await fetch(`${config.apiUrl}/auth/${endpoint}`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -63,8 +65,14 @@ const Login = ({ onLoginSuccess }) => {
 
     const handleGoogleLogin = () => {
         console.log('🔄 Redirigiendo a Google OAuth...');
-        // Para Google OAuth, sí necesitamos navegar
-        window.location.href = 'http://localhost:5000/api/auth/google';
+
+        // ⬅️ CAMBIADO: Construir URL completa para Google OAuth
+        const googleAuthUrl = config.isDevelopment
+            ? 'http://localhost:5000/api/auth/google'
+            : `${config.apiUrl}/auth/google`;
+
+        console.log('🌐 URL de Google OAuth:', googleAuthUrl);
+        window.location.href = googleAuthUrl;
     };
 
     return (

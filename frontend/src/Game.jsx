@@ -7,7 +7,7 @@ import backgroundMusic from "./Videos/miAudio.mp3";
 import Login from "./Login"; // Importar componente de login
 import GeminiChat from './components/GeminiChat';
 import WeatherWidget from './components/WeatherWidget';
-
+import config from './config';
 function makeInstance(card) {
     return {
         ...card,
@@ -151,7 +151,7 @@ export default function Game({ user, setUser }) { // ⬅️ NUEVO: Recibir prop 
         if (!token) return;
 
         try {
-            const response = await fetch('http://localhost:5000/api/games', {
+            const response = await fetch(`${config.apiUrl}/games`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Game from './Game';
 import { Spinner } from 'react-bootstrap';
+import config from './config'; // ⬅️ NUEVO: Importar configuración
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 function App() {
@@ -44,7 +45,8 @@ function App() {
 
         console.log('🔑 Token encontrado, cargando perfil...');
 
-        fetch('http://localhost:5000/api/auth/profile', {
+        // ⬅️ CAMBIADO: Usar config.apiUrl
+        fetch(`${config.apiUrl}/auth/profile`, {
             headers: { 'Authorization': `Bearer ${token}` }
         })
             .then(response => {
