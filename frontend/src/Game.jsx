@@ -89,7 +89,7 @@ export default function Game({ user, setUser }) { // ⬅️ NUEVO: Recibir prop 
         if (!token || !user) return;
 
         try {
-            const response = await fetch('http://localhost:5000/api/games', {
+            const response = await fetch(`${config.apiUrl}/games`, {  // ✅ Usar config.apiUrl
                 headers: {
                     'Authorization': `Bearer ${token}`
                 }

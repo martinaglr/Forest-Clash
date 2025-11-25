@@ -1,8 +1,9 @@
-// src/index.jsx
+// frontend/src/index.jsx
 import 'bootstrap/dist/css/bootstrap.min.css';
 import React, { useState, useEffect } from 'react';
 import ReactDOM from 'react-dom/client';
 import Game from './Game';
+import config from './config';
 
 function AppWrapper() {
     const [user, setUser] = useState(null);
@@ -12,7 +13,6 @@ function AppWrapper() {
         console.log('🔍 AppWrapper iniciando...');
         console.log('📍 URL:', window.location.href);
 
-        // ✅ Verificar si hay token en la URL (callback de Google)
         const urlParams = new URLSearchParams(window.location.search);
         const tokenFromUrl = urlParams.get('token');
 
@@ -21,14 +21,12 @@ function AppWrapper() {
             localStorage.setItem('token', tokenFromUrl);
             console.log('💾 Token guardado');
 
-            // Limpiar URL y recargar
             console.log('🔄 Limpiando URL y recargando...');
             window.history.replaceState({}, '', '/');
             window.location.reload();
             return;
         }
 
-        // ✅ Cargar perfil si hay token
         const token = localStorage.getItem('token');
 
         if (!token) {
@@ -39,7 +37,8 @@ function AppWrapper() {
 
         console.log('🔑 Token encontrado, cargando perfil...');
 
-        fetch('http://localhost:5000/api/auth/profile', {
+        // ✅ Usar config.apiUrl
+        fetch(`${config.apiUrl}/auth/profile`, {
             headers: { 'Authorization': `Bearer ${token}` }
         })
             .then(response => {
