@@ -161,11 +161,18 @@ router.get('/auth/google/callback',
     }),
     async (req, res) => {
         try {
+            // 🔍 DEBUG - Ver qué variable de entorno se está usando
+            console.log('🌍 FRONTEND_URL desde env:', process.env.FRONTEND_URL);
+            console.log('🌍 NODE_ENV:', process.env.NODE_ENV);
+            console.log('🌍 Todas las env vars:', Object.keys(process.env).filter(k => k.includes('FRONTEND')));
+
             console.log('✅ Google callback ejecutado, usuario:', req.user?.username);
 
             if (!req.user) {
                 console.error('❌ No hay usuario en req.user');
-                return res.redirect(`${process.env.FRONTEND_URL || 'http://localhost:3000'}/login?error=no_user`);
+                const redirectUrl = `${process.env.FRONTEND_URL || 'http://localhost:3000'}/login?error=no_user`;
+                console.log('🔄 Redirigiendo a (error):', redirectUrl);
+                return res.redirect(redirectUrl);
             }
 
             // Generar JWT
@@ -175,14 +182,21 @@ router.get('/auth/google/callback',
                 { expiresIn: '7d' }
             );
 
-            console.log('🔑 Token generado:', token.substring(0, 20) + '...');
+            console.log('🔐 Token generado:', token.substring(0, 20) + '...');
 
             // Redirigir con token en URL
             const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:3000';
-            res.redirect(`${frontendUrl}/auth/callback?token=${token}`);
+            const fullRedirectUrl = `${frontendUrl}/auth/callback?token=${token}`;
+
+            console.log('🔄 frontendUrl calculado:', frontendUrl);
+            console.log('🔄 Redirigiendo a:', fullRedirectUrl);
+
+            res.redirect(fullRedirectUrl);
         } catch (error) {
             console.error('❌ Error en callback de Google:', error);
-            res.redirect(`${process.env.FRONTEND_URL || 'http://localhost:3000'}/login?error=token_generation_failed`);
+            const errorRedirect = `${process.env.FRONTEND_URL || 'http://localhost:3000'}/login?error=token_generation_failed`;
+            console.log('🔄 Redirigiendo a (catch):', errorRedirect);
+            res.redirect(errorRedirect);
         }
     }
 );
