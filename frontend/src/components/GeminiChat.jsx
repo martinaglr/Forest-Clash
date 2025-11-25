@@ -50,7 +50,7 @@ ${botBoard.map(c => `- ${c.name || c.type}`).join('\n')}
         setLoading(true);
 
         try {
-            const API_KEY = process.env.REACT_APP_GEMINI_API_KEY || 'AIzaSyAiPXKhBW6ecgs7Fsc7GDRiB1lDbcTpJKA';
+            const API_KEY = process.env.REACT_APP_GEMINI_API_KEY || 'AIzaSyDI6CzLghY3FWAeOk2qvj66iY7Mq7VVH24';
 
             // Crear el prompt con contexto
             const prompt = `
