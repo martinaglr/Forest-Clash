@@ -14,7 +14,11 @@ const PORT = process.env.PORT || 5000;
 
 // CORS PRIMERO - Debe estar antes de todo
 app.use(cors({
-    origin: 'http://localhost:3000',
+    origin: [
+        'http://localhost:3000',
+        'https://forest-clash.vercel.app',
+        'https://forest-clash-nkh7btvka-martins-projects-895f5db4.vercel.app'
+    ],
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization']
