@@ -50,8 +50,12 @@ ${botBoard.map(c => `- ${c.name || c.type}`).join('\n')}
         setLoading(true);
 
         try {
-            const API_KEY = process.env.REACT_APP_GEMINI_API_KEY || 'AIzaSyAvn1rysFZNltB8TixWCFgLRw6xR5oezYA';
-
+            // const API_KEY = process.env.REACT_APP_GEMINI_API_KEY || 'AIzaSyBW9ZM4oV7reBMa_QrrzeM0scYO2wbigQA';
+            const API_KEY = process.env.REACT_APP_GEMINI_API_KEY;
+            if (!API_KEY) {
+                console.error('API Key no configurada');
+                return;
+            }
             // Crear el prompt con contexto
             const prompt = `
 Eres un guardabosques experto que ayuda a jugadores de "Forest Clash", un juego de cartas sobre prevención de incendios forestales.
