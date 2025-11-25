@@ -156,7 +156,7 @@ router.get('/auth/google',
 // Callback de Google - ACTUALIZADO
 router.get('/auth/google/callback',
     passport.authenticate('google', {
-        failureRedirect: 'http://localhost:3000/login?error=google_auth_failed',
+        failureRedirect: `${process.env.FRONTEND_URL || 'http://localhost:3000'}/login?error=google_auth_failed`,
         session: true
     }),
     async (req, res) => {
@@ -165,7 +165,7 @@ router.get('/auth/google/callback',
 
             if (!req.user) {
                 console.error('❌ No hay usuario en req.user');
-                return res.redirect('http://localhost:3000/login?error=no_user');
+                return res.redirect(`${process.env.FRONTEND_URL || 'http://localhost:3000'}/login?error=no_user`);
             }
 
             // Generar JWT
@@ -178,10 +178,11 @@ router.get('/auth/google/callback',
             console.log('🔑 Token generado:', token.substring(0, 20) + '...');
 
             // Redirigir con token en URL
-            res.redirect(`http://localhost:3000/auth/callback?token=${token}`);
+            const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:3000';
+            res.redirect(`${frontendUrl}/auth/callback?token=${token}`);
         } catch (error) {
             console.error('❌ Error en callback de Google:', error);
-            res.redirect('http://localhost:3000/login?error=token_generation_failed');
+            res.redirect(`${process.env.FRONTEND_URL || 'http://localhost:3000'}/login?error=token_generation_failed`);
         }
     }
 );
